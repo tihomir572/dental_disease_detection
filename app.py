@@ -12,7 +12,7 @@ pathlib.WindowsPath = pathlib.PosixPath
 @st.cache_resource
 def load_model():
   
-    model = torch.hub.load('gdp-dashboard-1/yolov5', 'custom', path='gdp-dashboard-1/best.pt',source='local',force_reload=True)
+    model = torch.hub.load('aagdp-dashboard-1/yolov5', 'custom', path='gdp-dashboard-1/best.pt',source='local',force_reload=True)
   
     return model
 

@@ -3,12 +3,19 @@ import torch
 from PIL import Image
 import numpy as np
 import cv2
+import sys
+from pathlib import Path
+import pathlib
+temp = pathlib.PosixPath
+pathlib.WindowsPath = pathlib.PosixPath
 
-# Load the YOLOv5 model
 @st.cache_resource
 def load_model():
-    model = torch.hub.load('C:\\Users\\tihom\\yolov5\\','custom', path='C:\\Users\\tihom\\yolov5\\runs\\train\\exp15\\weights\\best.pt',force_reload=True,source='local')
+  
+    model = torch.hub.load('/workspaces/gdp-dashboard-1/yolov5', 'custom', path='/workspaces/gdp-dashboard-1/yolov5/runs/train/best.pt',source='local',force_reload=True)
+  
     return model
+
 
 # Function to perform prediction
 def predict(image, model):
@@ -40,16 +47,19 @@ if uploaded_file is not None:
     image = Image.open(uploaded_file)
     st.image(image, caption='Uploaded Image', use_column_width=True)
 
-    # Perform prediction
-    results = predict(image, model)
-    
-    # Convert image for OpenCV processing
-    img_with_boxes = np.array(image)
-    img_with_boxes = cv2.cvtColor(img_with_boxes, cv2.COLOR_RGB2BGR)
-    
-    # Draw bounding boxes on the image
-    img_with_boxes = draw_boxes(img_with_boxes, results)
-    
-    # Convert back to RGB for displaying with Streamlit
-    img_with_boxes = cv2.cvtColor(img_with_boxes, cv2.COLOR_BGR2RGB)
-    st.image(img_with_boxes, caption='Detected Diseases', use_column_width=True)
+    if model is not None:
+        # Perform prediction
+        results = predict(image, model)
+        
+        # Convert image for OpenCV processing
+        img_with_boxes = np.array(image)
+        img_with_boxes = cv2.cvtColor(img_with_boxes, cv2.COLOR_RGB2BGR)
+        
+        # Draw bounding boxes on the image
+        img_with_boxes = draw_boxes(img_with_boxes, results)
+        
+        # Convert back to RGB for displaying with Streamlit
+        img_with_boxes = cv2.cvtColor(img_with_boxes, cv2.COLOR_BGR2RGB)
+        st.image(img_with_boxes, caption='Detected Diseases', use_column_width=True)
+    else:
+        st.error("Failed to load the model. Please check the model path.")
